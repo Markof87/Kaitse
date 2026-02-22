@@ -12,9 +12,12 @@ beginning.
 
 Kaitse is divided into three main modules:
 
-Kaitse/ │ ├── kaitse-web/ \# Next.js frontend (App Router + TypeScript)
-├── kaitse-batch/ \# Python ingestion & ETL jobs └── shared/ \# Shared
-utilities (future cross-module logic)
+```
+Kaitse/
+├── kaitse-web/          # Next.js frontend (App Router + TypeScript)
+├── kaitse-batch/        # Python ingestion & ETL jobs
+└── shared/              # Shared utilities (future cross-module logic)
+```
 
 ### Frontend (`kaitse-web`)
 
