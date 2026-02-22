@@ -61,13 +61,16 @@ UNIQUE constraints and UPSERT.
 
 ### Clone Repository
 
-git clone https://github.com/YOUR_USERNAME/kaitse.git cd kaitse
+git clone https://github.com/YOUR_USERNAME/kaitse.git 
+cd kaitse
 
 ------------------------------------------------------------------------
 
 ## Frontend Setup (Next.js)
 
-cd kaitse-web npm install npm run dev
+cd kaitse-web 
+npm install 
+npm run dev
 
 Application runs at:
 
@@ -83,7 +86,8 @@ NEXT_PUBLIC_SUPABASE_URL= NEXT_PUBLIC_SUPABASE_ANON_KEY=
 
 ## Batch Setup (Python)
 
-cd kaitse-batch python -m venv .venv
+cd kaitse-batch 
+python -m venv .venv
 
 Activate environment:
 
