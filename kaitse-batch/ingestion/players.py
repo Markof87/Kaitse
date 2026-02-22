@@ -8,27 +8,28 @@ from utils.logging_config import setup_logging
 
 logger = setup_logging(__name__)
 
-TEAM_ID_RE = re.compile(r"/verein/(\d+)")
+PLAYER_ID_RE = re.compile(r"/spieler/(\d+)")
 
-def parse_teams(html: str):
+def parse_players(html: str):
     soup = BeautifulSoup(html, "lxml")
 
-    teams = {}
-    for a in soup.select("a[href*='/verein/']"):
+    players = {}
+    for a in soup.select("a[href*='/spieler/']"):
+        print(a)
         href = a.get("href") or ""
-        m = TEAM_ID_RE.search(href)
+        m = PLAYER_ID_RE.search(href)
         if not m:
             continue
-        tm_team_id = int(m.group(1))
+        player_id = int(m.group(1))
         name = a.get_text(strip=True)
         if not name:
             continue
 
-        teams[tm_team_id] = name
+        players[player_id] = name
 
-    return [{"tm_team_id": k, "name": v} for k, v in teams.items()]
+    return [{"player_id": k, "name": v} for k, v in players.items()]
 
-def upsert_teams(teams: list[dict]) -> None:
+def upsert_players(players: list[dict]) -> None:
     sb = supabase_client()
 
     comp = sb.table("competitions").upsert(
@@ -40,12 +41,12 @@ def upsert_teams(teams: list[dict]) -> None:
     competition_code = comp["code"]
     logger.info(f"competition upserted: code={competition_code} code=IT1")
 
-    sb.table("teams").upsert(
-        [{"tm_team_id": t["tm_team_id"], "name": t["name"]} for t in teams],
+    sb.table("players").upsert(
+        [{"tm_team_id": t["tm_team_id"], "name": t["name"]} for t in players],
         on_conflict="tm_team_id"
     ).execute()
 
-    logger.info(f"teams upserted: count={len(teams)}")
+    logger.info(f"players upserted: count={len(players)}")
 
     # upsert relazione competizione - stagione
     existing = sb.table("competition_seasons").select("competition_id, season_code").eq("competition_id", competition_code).execute().data
@@ -60,7 +61,7 @@ def upsert_teams(teams: list[dict]) -> None:
     existing = sb.table("competition_season_teams").select("competition_id, season_code, team_id").eq("competition_id", competition_code).execute().data
     existing_team_ids = {e["team_id"] for e in existing}
     team_ids_to_add = []
-    for t in teams: 
+    for t in players: 
         team = sb.table("teams").select("tm_team_id").eq("tm_team_id", t["tm_team_id"]).execute().data[0]
         team_id = team["tm_team_id"]
         if team_id not in existing_team_ids:

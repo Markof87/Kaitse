@@ -24,9 +24,9 @@ def parse_teams(html: str):
         if not name:
             continue
 
-        teams[tm_team_id] = name
+        teams[tm_team_id] = {"name": name, "url": href}
 
-    return [{"tm_team_id": k, "name": v} for k, v in teams.items()]
+    return [{"tm_team_id": k, "name": v["name"], "url": v["url"]} for k, v in teams.items()]
 
 def upsert_teams(teams: list[dict]) -> None:
     sb = supabase_client()
