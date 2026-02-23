@@ -1,6 +1,6 @@
 # Kaitse
 
-![Icon Project](https://github.com/Markof87/Kaitse/blob/main/icon_kaitse.png)
+![Icon Project](https://github.com/Markof87/Kaitse/blob/main/icon_kaitse_small.png)
 
 Kaitse is a modular football analytics platform focused on structured
 data ingestion, normalization, storage, and visualization.
