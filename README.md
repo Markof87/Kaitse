@@ -64,7 +64,7 @@ UNIQUE constraints and UPSERT.
 ### Clone Repository
 
 ```
-git clone https://github.com/YOUR_USERNAME/kaitse.git  
+git clone https://github.com/Markof87/kaitse.git  
 cd kaitse
 ```
 
