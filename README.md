@@ -84,7 +84,10 @@ http://localhost:3000
 
 Create `.env.local` inside `kaitse-web/`:
 
-NEXT_PUBLIC_SUPABASE_URL= NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+NEXT_PUBLIC_SUPABASE_URL=  
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
 
 ------------------------------------------------------------------------
 
@@ -111,8 +114,10 @@ pip install -r requirements.txt
 
 Create `.env` inside `kaitse-batch/`:
 
+```
 SUPABASE_URL=  
 SUPABASE_SERVICE_ROLE_KEY=
+```
 
 ------------------------------------------------------------------------
 
