@@ -61,20 +61,20 @@ UNIQUE constraints and UPSERT.
 
 ### Clone Repository
 
-...
+```
 git clone https://github.com/YOUR_USERNAME/kaitse.git  
 cd kaitse
-...
+```
 
 ------------------------------------------------------------------------
 
 ## Frontend Setup (Next.js)
 
-...
+```
 cd kaitse-web  
 npm install  
 npm run dev  
-...
+```
 
 Application runs at:
 
@@ -90,10 +90,10 @@ NEXT_PUBLIC_SUPABASE_URL= NEXT_PUBLIC_SUPABASE_ANON_KEY=
 
 ## Batch Setup (Python)
 
-...
+```
 cd kaitse-batch  
 python -m venv .venv
-...
+```
 
 Activate environment:
 
@@ -103,9 +103,9 @@ macOS / Linux: source .venv/bin/activate
 
 Install dependencies:
 
-...
+```
 pip install -r requirements.txt
-...
+```
 
 ### Required Environment Variables
 
@@ -120,9 +120,9 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 From inside `kaitse-batch`:
 
-...
+```
 python -m ingestion.teams
-...
+```
 
 This will: 
 -   Scrape Transfermarkt competition data
