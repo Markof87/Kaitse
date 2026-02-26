@@ -31,7 +31,8 @@ if __name__ == "__main__":
             for p in sorted(players, key=lambda x: x["full_name"].lower()):
                 logger.info(f"  {p['id']} - {p['full_name']} ({p['short_name']})")
                 print(f"  {p['id']} - {p['full_name']} ({p['short_name']})")
-                upsert_players([p])
+                #TODO: valore della stagione cablato per 2025-2026, in futuro va generalizzato per altre stagioni
+                upsert_players([p], t["tm_team_id"], "2025-2026")
 
     except Exception as e:
         logger.exception("Fatal error during ingestion")

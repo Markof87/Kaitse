@@ -100,7 +100,7 @@ def get_player_transfermarkt_info(url: str) -> dict:
     
     return player_info
 
-def upsert_players(players: list[dict]) -> None:
+def upsert_players(players: list[dict], tm_team_id: int, season_code: str) -> None:
     sb = supabase_client()
 
     sb.table("players").upsert(
@@ -116,6 +116,28 @@ def upsert_players(players: list[dict]) -> None:
             "weight": p.get("weight"),
             "preferred_foot": p.get("preferred_foot"),
         } for p in players]
+    ).execute()
+
+    tm_ids = [p["id"] for p in players]
+    rows = sb.table("players").select("id, id").in_("id", tm_ids).execute().data
+    player_id_by_tm = {r["id"]: r["id"] for r in rows}
+
+    team_row = sb.table("teams").select("id").eq("tm_team_id", tm_team_id).maybe_single().execute().data
+    team_id = team_row["id"]
+
+    links = [
+        {
+            "team_id": team_id,
+            "season_code": season_code,
+            "player_id": player_id_by_tm[p["id"]],
+        }
+        for p in players
+        if p["id"] in player_id_by_tm
+    ]
+
+    sb.table("team_season_players").upsert(
+        links,
+        on_conflict="team_id,season_code,player_id"
     ).execute()
 
     logger.info(f"players upserted: count={len(players)}")

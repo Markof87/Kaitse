@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import re
+import uuid
 from bs4 import BeautifulSoup
 from ingestion.config import supabase_client
 from utils.logging_config import setup_logging
@@ -24,9 +25,9 @@ def parse_teams(html: str):
         if not name:
             continue
 
-        teams[tm_team_id] = {"name": name, "url": href}
+        teams[tm_team_id] = {"id": str(uuid.uuid4()), "name": name, "url": href}
 
-    return [{"tm_team_id": k, "name": v["name"], "url": v["url"]} for k, v in teams.items()]
+    return [{"tm_team_id": k,  "id": v["id"], "name": v["name"], "url": v["url"]} for k, v in teams.items()]
 
 def upsert_teams(teams: list[dict]) -> None:
     sb = supabase_client()
@@ -41,7 +42,7 @@ def upsert_teams(teams: list[dict]) -> None:
     logger.info(f"competition upserted: code={competition_code} code=IT1")
 
     sb.table("teams").upsert(
-        [{"tm_team_id": t["tm_team_id"], "name": t["name"]} for t in teams],
+        [{"id": t["id"], "tm_team_id": t["tm_team_id"], "name": t["name"]} for t in teams],
         on_conflict="tm_team_id"
     ).execute()
 
@@ -50,6 +51,8 @@ def upsert_teams(teams: list[dict]) -> None:
     # upsert relazione competizione - stagione
     existing = sb.table("competition_seasons").select("competition_id, season_code").eq("competition_id", competition_code).execute().data
     existing_season_code= {e["season_code"] for e in existing}
+
+    #TODO: valore cablato per la stagione 2025-2026, in futuro va generalizzato per altre stagioni
     season_code = "2025-2026"
     if season_code not in existing_season_code:
         sb.table("competition_seasons").insert({"competition_id": competition_code, "season_code": season_code}).execute()
