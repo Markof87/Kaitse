@@ -105,7 +105,6 @@ def upsert_players(players: list[dict], tm_team_id: int, season_code: str) -> No
 
     sb.table("players").upsert(
         [{
-            "id": str(uuid.uuid4()),
             "full_name": p["full_name"],
             "short_name": p["short_name"],
             "slug": p["slug"],
@@ -115,27 +114,32 @@ def upsert_players(players: list[dict], tm_team_id: int, season_code: str) -> No
             "height": p.get("height"),
             "weight": p.get("weight"),
             "preferred_foot": p.get("preferred_foot"),
-        } for p in players]
+        } for p in players], on_conflict="transfermarkt_id"
     ).execute()
 
-    tm_ids = [p["id"] for p in players]
-    rows = sb.table("players").select("id, id").in_("id", tm_ids).execute().data
-    player_id_by_tm = {r["id"]: r["id"] for r in rows}
+    tm_ids = [p["transfermarkt_id"] for p in players]
+    rows = sb.table("players").select("id, transfermarkt_id").in_("transfermarkt_id", tm_ids).execute().data
+    player_id_by_tm = {int(r["transfermarkt_id"]): r["id"] for r in rows}
+    print(player_id_by_tm)
 
-    team_row = sb.table("teams").select("id").eq("tm_team_id", tm_team_id).maybe_single().execute().data
+    team_row = sb.table("teams").select("id, tm_team_id").eq("tm_team_id", tm_team_id).maybe_single().execute().data
+    print(team_row)
     team_id = team_row["id"]
+    print(team_id, season_code)
 
     links = [
         {
             "team_id": team_id,
             "season_code": season_code,
-            "player_id": player_id_by_tm[p["id"]],
+            "player_id": player_id_by_tm[p["transfermarkt_id"]],
         }
         for p in players
-        if p["id"] in player_id_by_tm
+        if p["transfermarkt_id"] in player_id_by_tm
     ]
 
-    sb.table("team_season_players").upsert(
+    print("aaaaaaa", links)
+
+    sb.table("player_stats").upsert(
         links,
         on_conflict="team_id,season_code,player_id"
     ).execute()
