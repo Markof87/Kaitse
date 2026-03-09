@@ -1,4 +1,5 @@
 pyproject.toml
+app/__init__.py
 app/api/deps.py
 app/api/router.py
 app/api/v1/competitions.py
@@ -23,9 +24,11 @@ app/application/services/player_service.py
 app/application/services/player_stats_service.py
 app/application/services/season_service.py
 app/application/services/team_service.py
+app/core/__init__.py
 app/core/config.py
 app/core/exceptions.py
 app/core/logging.py
+app/domain/__init__.py
 app/domain/exceptions.py
 app/domain/repositories/competition_repository.py
 app/domain/repositories/nationality_repository.py
@@ -35,8 +38,11 @@ app/domain/repositories/position_repository.py
 app/domain/repositories/season_repository.py
 app/domain/repositories/team_repository.py
 app/infrastructure/unit_of_work.py
+app/infrastructure/db/__init__.py
 app/infrastructure/db/base.py
 app/infrastructure/db/session.py
+app/infrastructure/db/models/__init__.py
+app/infrastructure/db/models/associations.py
 app/infrastructure/db/models/competition.py
 app/infrastructure/db/models/nationality.py
 app/infrastructure/db/models/player.py

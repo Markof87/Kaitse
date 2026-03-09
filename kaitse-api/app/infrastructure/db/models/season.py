@@ -13,8 +13,8 @@ class Season(Base):
     __tablename__="seasons"
 
     code: Mapped[str] = mapped_column(Text, primary_key=True)
-    start_date = Mapped[date|None] = mapped_column(Date, nullable=True)
-    end_date = Mapped[date|None] = mapped_column(Date, nullable=True)
+    start_date: Mapped[date|None] = mapped_column(Date, nullable=True)
+    end_date: Mapped[date|None] = mapped_column(Date, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False)
 
     def __repr__(self) -> str:
