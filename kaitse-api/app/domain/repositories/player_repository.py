@@ -1,14 +1,14 @@
 from typing import Protocol
 from uuid import UUID
 
-from app.domain.models import Player, PlayerFilters
+from app.infrastructure.db.models.player import Player
 
 class PlayerRepository(Protocol):
     async def get_by_id(self, player_id: UUID) -> Player | None:
         ...
     async def get_by_slug(self, slug: str) -> Player | None:
         ...
-    async def list(self, filters: PlayerFilters) -> list[Player]:
+    async def list(self, filters: dict) -> list[Player]:
         ...
     async def save(self, player: Player) -> Player:
         ...

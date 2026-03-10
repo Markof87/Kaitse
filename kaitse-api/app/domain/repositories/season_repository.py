@@ -1,0 +1,13 @@
+from typing import Protocol
+
+from app.infrastructure.db.models.season import Season
+
+class SeasonRepository(Protocol):
+    async def get_by_code(self, code: str) -> Season | None:
+        ...
+    async def list(self) -> list[Season]:
+        ...
+    async def save(self, season: Season) -> Season:
+        ...
+    async def delete(self, code: str) -> None:
+        ...
