@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.infrastructure.db.models.season import Season
 
-class SqlAlchemyCompetitionRepository:
+class SqlAlchemySeasonRepository:
     def __init__(self, session: AsyncSession)-> None:
         self.session = session
 

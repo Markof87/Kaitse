@@ -69,16 +69,16 @@ class SqlAlchemyPlayerStatsRepository:
             return 0
         
         values =[{  
-                    "id" = s.id,
-                    "player_id" = s.player_id,
-                    "team_id" = s.team_id,
-                    "season_code" = s.season_code,
-                    "source" = s.source,
-                    "minutes" = s.minutes,
-                    "matches" = s.matches,
-                    "goals" = s.goals,
-                    "assists" = s.assists,
-                    "metrics" = s.metrics,
+                    "id" : s.id,
+                    "player_id" : s.player_id,
+                    "team_id" : s.team_id,
+                    "season_code" : s.season_code,
+                    "source" : s.source,
+                    "minutes" : s.minutes,
+                    "matches" : s.matches,
+                    "goals" : s.goals,
+                    "assists" : s.assists,
+                    "metrics" : s.metrics,
                 }
                 for s in stats_list
                 ]
