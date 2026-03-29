@@ -43,6 +43,10 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    register_exception_handlers(app)
+
+    app.include_router(api_router, prefix=settings.api_v1_prefix)
+
     #HEALTH CHECK ENDPOINT - minimum endpoint to verify that the API is up and running
     @app.get("/health", tags=["system"])
     async def health() -> dict[str, str]:
