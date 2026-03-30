@@ -45,4 +45,4 @@ class SeasonService:
             season = await self.uow.seasons.get_by_code(code)
             if not season:
                 raise NotFoundError(f"Season with code '{code}' not found", code)
-            await self.uow.seasons.delete(season)
+            await self.uow.seasons.delete(code)

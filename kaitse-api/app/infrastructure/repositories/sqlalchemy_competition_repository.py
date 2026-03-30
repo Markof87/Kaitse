@@ -7,7 +7,7 @@ class SqlAlchemyCompetitionRepository:
     def __init__(self, session: AsyncSession)-> None:
         self.session = session
 
-    async def get_competition_by_id(self, competition_id: int) -> Competition | None:
+    async def get_by_id(self, competition_id: int) -> Competition | None:
         return await self.session.get(Competition, competition_id)
 
     async def get_by_code(self, code: str) -> Competition | None:
@@ -31,6 +31,6 @@ class SqlAlchemyCompetitionRepository:
         return competition
 
     async def delete(self, competition_id: int) -> None:
-        competition = await self.get_competition_by_id(competition_id)
+        competition = await self.get_by_id(competition_id)
         if competition:
             await self.session.delete(competition)

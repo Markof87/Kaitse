@@ -12,14 +12,14 @@ class SQLAlchemyPlayerRepository:
     #Recover an object for primary key. Uses internal session cache: if the object is already
     #present, return it without issuing a SQL query. Otherwise, issues a SQL query to locate the 
     #object based on the primary key, and returns the object, or None if not found.
-    async def get_player_by_id(self, player_id: UUID) -> Player | None:
+    async def get_by_id(self, player_id: UUID) -> Player | None:
         return await self.session.get(Player, player_id)
     
-    async def get_player_by_slug(self, slug: str) -> Player | None:
+    async def get_by_slug(self, slug: str) -> Player | None:
         result = await self.session.execute(select(Player).where(Player.slug == slug))
         return result.scalar_one_or_none()
     
-    async def list_players(self, filters: dict) -> list[Player]:
+    async def list(self, filters: dict) -> list[Player]:
         stmt = select(Player)
         if name:= filters.get("name"):
             stmt = stmt.where(Player.full_name.ilike(f"%{name}%"))
@@ -41,7 +41,7 @@ class SQLAlchemyPlayerRepository:
         return player
     
     async def delete(self, player_id: UUID) -> None:
-        player = await self.get_player_by_id(player_id)
+        player = await self.get_by_id(player_id)
         if(player):
             await self.session.delete(player)
 

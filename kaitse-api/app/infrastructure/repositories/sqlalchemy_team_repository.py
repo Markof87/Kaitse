@@ -9,11 +9,11 @@ class SQLAlchemyTeamRepository:
     def __init__(self, session: AsyncSession)-> None:
         self.session = session
 
-    async def get_team_by_id(self, team_id: UUID) -> Team | None:
+    async def get_by_id(self, team_id: UUID) -> Team | None:
         return await self.session.get(Team, team_id)
 
     async def get_by_tm_id(self, tm_team_id: int) -> Team | None:
-        stmt = select(Team).where(Team.tm_id == tm_team_id)
+        stmt = select(Team).where(Team.tm_team_id == tm_team_id)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
     
@@ -33,10 +33,10 @@ class SQLAlchemyTeamRepository:
         return team
 
     async def delete(self, team_id: UUID) -> None:
-        team = await self.get_team_by_id(team_id)
+        team = await self.get_by_id(team_id)
         if team:
             await self.session.delete(team)
 
     async def exists(self, team_id: UUID) -> bool:
-        team = await self.get_team_by_id(team_id)
+        team = await self.get_by_tm_id(team_id)
         return team is not None

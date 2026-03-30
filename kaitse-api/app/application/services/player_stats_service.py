@@ -1,4 +1,4 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from app.application.dto.player_stats import PlayerStatsCreateDTO, PlayerStatsFilterDTO, PlayerStatsUpsertDTO, PlayerStatsResponseDTO
 from app.application.unit_of_work import UnitOfWork
@@ -18,7 +18,7 @@ class PlayerStatsService:
     
     async def get_by_player(self, player_id: UUID, season_code: str | None=None) -> list[PlayerStatsResponseDTO]:
         async with self.uow:
-            stats = await self.uow.player_stats.get_by_player_and_season(player_id, season_code)
+            stats = await self.uow.player_stats.get_by_player(player_id, season_code)
             if not stats:
                 raise NotFoundError(f"PlayerStats for player_id '{player_id}' and season '{season_code}' not found", {"player_id": player_id, "season": season_code})
             return [PlayerStatsResponseDTO.model_validate(stat) for stat in stats]
@@ -32,7 +32,8 @@ class PlayerStatsService:
 
     async def upsert(self, dto: PlayerStatsUpsertDTO) -> PlayerStatsResponseDTO:
         async with self.uow:
-            stats = PlayerStats(player_id=dto.player_id, 
+            stats = PlayerStats(id=uuid4(),
+                                player_id=dto.player_id, 
                                 team_id=dto.team_id, 
                                 season_code=dto.season_code, 
                                 source=dto.source,

@@ -66,5 +66,5 @@ class PlayerPositionAddDTO(BaseModel):
     is_primary: bool = False
 
 class PlayerNationalityAddDTO(BaseModel):
-    national_code: str
+    code: str
     is_primary: bool = False

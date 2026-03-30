@@ -18,3 +18,13 @@ class TeamUpdateDTO(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+class TeamResponseDTO(BaseModel):
+    id: UUID
+    tm_team_id: int | None
+    name: str
+    city: str | None
+    image_path: str | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

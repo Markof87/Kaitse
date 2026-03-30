@@ -72,18 +72,18 @@ class PlayerService:
             player = await self.uow.players.get_by_id(player_id)
             if not player:
                 raise NotFoundError(f"Player with id '{player_id}' not found", player_id)
-            
+            from sqlalchemy import select
+            from app.infrastructure.db.models.associations import PlayerPosition
+
             #If is primary, check if player already has a primary position
             if dto.is_primary:
-                from sqlalchemy import select
-                from app.infrastructure.db.models.associations import PlayerPosition
                 result = await self.uow.session.execute(
                     select(PlayerPosition).where(PlayerPosition.player_id == player_id, PlayerPosition.is_primary == True)
                 )
                 if result.scalars().first():
                     raise ValidationError("Player already has a primary position", {"is_primary": "Player already has a primary position"})
             
-            position = PlayerPosition(player_id=player_id, position=dto.position, is_primary=dto.is_primary)
+            position = PlayerPosition(player_id=player_id, position_code=dto.position_code, is_primary=dto.is_primary)
             self .uow.session.add(position)
             await self.uow.session.flush()
     
@@ -92,7 +92,7 @@ class PlayerService:
             from sqlalchemy import select
             from app.infrastructure.db.models.associations import PlayerPosition
             result = await self.uow.session.execute(
-                select(PlayerPosition).where(PlayerPosition.player_id == player_id, PlayerPosition.position == position)
+                select(PlayerPosition).where(PlayerPosition.player_id == player_id, PlayerPosition.position_code == position)
             )
             player_position = result.scalars().first()
             if not player_position:
@@ -104,15 +104,15 @@ class PlayerService:
             player = await self.uow.players.get_by_id(player_id)
             if not player:
                 raise NotFoundError(f"Player with id '{player_id}' not found", player_id)
+            from sqlalchemy import select
+            from app.infrastructure.db.models.associations import PlayerNationality
             if dto.is_primary:
-                from sqlalchemy import select
-                from app.infrastructure.db.models.associations import PlayerNationality
                 result = await self.uow.session.execute(
                     select(PlayerNationality).where(PlayerNationality.player_id == player_id, PlayerNationality.is_primary == True)
                 )
                 if result.scalar_one_or_none():
                     raise ValidationError("Player already has a primary nationality", {"is_primary": "Player already has a primary nationality"})
             
-            nationality = PlayerNationality(player_id=player_id, nationality_code=dto.nationality_code, is_primary=dto.is_primary)
+            nationality = PlayerNationality(player_id=player_id, code=dto.code, is_primary=dto.is_primary)
             self.uow.session.add(nationality)
             await self.uow.session.flush()

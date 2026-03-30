@@ -24,7 +24,7 @@ class TeamService:
     async def create(self, dto: TeamCreateDTO) -> TeamResponseDTO:
         async with self.uow:
             if dto.tm_team_id is not None:
-                existing = await self.uow.teams.get_by_tm_team_id(dto.tm_team_id)
+                existing = await self.uow.teams.get_by_tm_id(dto.tm_team_id)
                 if existing:
                     raise ConflictError(f"Team with tm_team_id '{dto.tm_team_id}' already exists", dto.tm_team_id)
             team = Team(name=dto.name, tm_team_id=dto.tm_team_id, city=dto.city, image_path=dto.image_path)

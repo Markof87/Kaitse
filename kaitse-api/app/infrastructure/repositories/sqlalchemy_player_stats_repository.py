@@ -44,16 +44,6 @@ class SqlAlchemyPlayerStatsRepository:
                                            assists = stats.assists,
                                            metrics = stats.metrics,
                                            )
-                                           .on_conflict_do_update(constraints = "uq_player_stats_logical",
-                                                                  set_={
-                                                                      "minutes" : stats.minutes,
-                                                                      "matches" : stats.matches,
-                                                                      "goals" : stats.goals,
-                                                                      "assists" : stats.assists,
-                                                                      "metrics" : stats.metrics,
-                                                                      "updated_at" : stats.updated_at,
-                                                                  },
-                                            )
                                             .returning(PlayerStats)
                 )
         result = await self.session.execute(stmt)
@@ -85,16 +75,6 @@ class SqlAlchemyPlayerStatsRepository:
         stmt = (
             insert(PlayerStats)
             .values(values)
-            .on_conflict_do_update(
-                constraint="uq_player_stats_logical",
-                set={
-                    "minutes" : insert(PlayerStats).excluded.minutes,
-                    "matches" : insert(PlayerStats).exluded.matches,
-                    "goals" : insert(PlayerStats).excluded.goals,
-                    "assists" : insert(PlayerStats).exluded.assists,
-                    "metrics" : insert(PlayerStats).excluded.metrics,
-                }
-            )
         )
 
         await self.session.execute(stmt)

@@ -7,7 +7,7 @@ class SqlAlchemySeasonRepository:
     def __init__(self, session: AsyncSession)-> None:
         self.session = session
 
-    async def get_season_by_code(self, code: str) -> Season | None:
+    async def get_by_code(self, code: str) -> Season | None:
         return await self.session.get(Season, code)
 
     async def list(self) -> list[Season]:
@@ -22,6 +22,6 @@ class SqlAlchemySeasonRepository:
         return season
 
     async def delete(self, code: str) -> None:
-        season = await self.get_season_by_code(code)
+        season = await self.get_by_code(code)
         if season:
             await self.session.delete(season)

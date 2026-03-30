@@ -20,7 +20,7 @@ class CompetitionSeasonTeam(Base):
     team_id: Mapped[UUID] = mapped_column(ForeignKey("teams.id", ondelete="CASCADE"), primary_key=True)
 
 class PlayerPosition(Base):
-    __tablename__ = "player_position"
+    __tablename__ = "player_positions"
 
     player_id: Mapped[UUID] = mapped_column(ForeignKey("players.id", ondelete="CASCADE"), primary_key=True)
     position_code: Mapped[str] = mapped_column(ForeignKey("positions.code", ondelete="CASCADE"), primary_key=True)
@@ -30,6 +30,6 @@ class PlayerPosition(Base):
 class PlayerNationality(Base):
     __tablename__ = "player_nationalities"
     player_id: Mapped[UUID] = mapped_column(ForeignKey("players.id", ondelete="CASCADE"), primary_key=True)
-    nationality_code: Mapped[str] = mapped_column(ForeignKey("nationalities.code", ondelete="CASCADE"), primary_key=True)
+    code: Mapped[str] = mapped_column(ForeignKey("nationalities.code", ondelete="CASCADE"), primary_key=True)
     is_primary: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())

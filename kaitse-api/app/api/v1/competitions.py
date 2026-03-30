@@ -7,11 +7,7 @@ from app.application.services.competition_service import CompetitionService
 router = APIRouter(prefix="/competitions", tags=["competitions"])
 
 @router.get("/", response_model=list[CompetitionResponseDTO])
-async def list_competitions(
-    country_code: str | None = Query(None),
-    level: int | None = Query(None),
-    service: CompetitionService = Depends(get_competition_service)
-) -> list[CompetitionResponseDTO]:
+async def list_competitions(country_code: str | None = Query(None), level: int | None = Query(None), service: CompetitionService = Depends(get_competition_service)) -> list[CompetitionResponseDTO]:
     filters = {}
     if country_code:
         filters["country_code"] = country_code
@@ -20,8 +16,12 @@ async def list_competitions(
     return await service.list(filters)
 
 @router.get("/{competition_id}", response_model=CompetitionResponseDTO)
-async def get_competition(competition_id: int, service: CompetitionService = Depends(get_competition_service)) -> CompetitionResponseDTO:
+async def get_competition_by_id(competition_id: int, service: CompetitionService = Depends(get_competition_service)) -> CompetitionResponseDTO:
     return await service.get_by_id(competition_id)
+
+@router.get("/code/{code}", response_model=CompetitionResponseDTO)
+async def get_competition_by_code(code: str, service: CompetitionService = Depends(get_competition_service)) -> CompetitionResponseDTO:
+    return await service.get_by_code(code)
 
 @router.post("/", response_model=CompetitionResponseDTO, status_code=status.HTTP_201_CREATED)
 async def create_competition(dto: CompetitionCreateDTO, service: CompetitionService = Depends(get_competition_service)) -> CompetitionResponseDTO:

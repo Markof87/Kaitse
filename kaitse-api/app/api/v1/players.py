@@ -9,11 +9,7 @@ from app.application.services.player_service import PlayerService
 router = APIRouter(prefix="/players", tags=["players"])
 
 @router.get("/", response_model=list[PlayerResponseDTO])
-async def list_players(
-    name: str | None = Query(None),
-    preferred_foot: str | None = Query(None),
-    service: PlayerService = Depends(get_player_service)
-) -> list[PlayerResponseDTO]:
+async def list_players(name: str | None = Query(None), preferred_foot: str | None = Query(None), service: PlayerService = Depends(get_player_service)) -> list[PlayerResponseDTO]:
     filters = PlayerFiltersDTO(name=name, preferred_foot=preferred_foot)
     return await service.list(filters)
 
