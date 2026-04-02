@@ -3,7 +3,7 @@ load_dotenv()
 
 import re
 from bs4 import BeautifulSoup
-from ingestion.config import fetch_html, supabase_client
+from ingestion.config import fetch_html
 from utils.logging_config import setup_logging
 import uuid
 

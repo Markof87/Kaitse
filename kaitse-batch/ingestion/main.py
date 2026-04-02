@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from utils.logging_config import setup_logging
 from ingestion.config import fetch_html
 from ingestion.teams import parse_teams, upsert_teams

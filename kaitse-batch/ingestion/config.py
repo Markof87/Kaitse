@@ -3,7 +3,6 @@ import httpx
 import random
 import time
 from typing import Optional
-from supabase import create_client, Client
 
 DEFAULT_HEADERS = {
     "User-Agent": (
@@ -24,11 +23,6 @@ _client = httpx.Client(
     follow_redirects=True,
     http2=False,
 )
-
-def supabase_client() -> Client:
-    url = os.environ["SUPABASE_URL"]
-    key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
-    return create_client(url, key)
 
 def _sleep_polite(min_s: float = 1.2, max_s: float = 2.0) -> None:
     time.sleep(random.uniform(min_s, max_s))

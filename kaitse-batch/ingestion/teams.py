@@ -1,10 +1,17 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+import os
+import requests
+
 import re
 import uuid
 from bs4 import BeautifulSoup
-from ingestion.config import supabase_client
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from utils.logging_config import setup_logging
 
 logger = setup_logging(__name__)
@@ -30,25 +37,44 @@ def parse_teams(html: str):
     return [{"tm_team_id": k,  "id": v["id"], "name": v["name"], "url": v["url"]} for k, v in teams.items()]
 
 def upsert_teams(teams: list[dict]) -> None:
-    sb = supabase_client()
+    #sb = supabase_client()
 
-    comp = sb.table("competitions").upsert(
-        #TODO: valori cablati per la sola serie A, in futuro va generalizzato per altre competizioni
-        {"code": "IT1", "name": "Serie A", "country_code": "ITA"},
-        on_conflict="code"
-    ).execute().data[0]
+    # TODO: valori cablati per la sola Serie A, in futuro va generalizzato
+    payload = {"code": "IT1", "name": "Serie A Enilive", "country_code": "ITA", "level": 1, "organizer": "Italy"}
+    api_base_url = os.getenv("KAITSE_API_BASE_URL", "http://localhost:8000").rstrip("/")
 
-    competition_code = comp["code"]
-    logger.info(f"competition upserted: code={competition_code} code=IT1")
+    resp = requests.post(
+        f"{api_base_url}/api/v1/competitions/",
+        json=payload,
+        timeout=30,
+    )
+    resp.raise_for_status()
 
-    sb.table("teams").upsert(
-        [{"id": t["id"], "tm_team_id": t["tm_team_id"], "name": t["name"]} for t in teams],
-        on_conflict="tm_team_id"
-    ).execute()
+    body = resp.json()
+    comp = body.get("data", body) if isinstance(body, dict) else {}
+    competition_code = comp.get("code", payload["code"])
 
-    logger.info(f"teams upserted: count={len(teams)}")
+    logger.info(f"competition synced via API: code={competition_code}")
+
+    for t in teams:
+        team_payload = {
+            "tm_team_id": t["tm_team_id"],
+            "name": t["name"],
+            "city": "",
+            "image_path": "",
+        }
+
+        resp = requests.post(
+            f"{api_base_url}/api/v1/teams/",
+            json=team_payload,
+            timeout=30,
+        )
+        resp.raise_for_status()
+
+    logger.info(f"teams synced via API: count={len(teams)}")
 
     # upsert relazione competizione - stagione
+    """
     existing = sb.table("competition_seasons").select("competition_id, season_code").eq("competition_id", competition_code).execute().data
     existing_season_code= {e["season_code"] for e in existing}
 
@@ -76,5 +102,5 @@ def upsert_teams(teams: list[dict]) -> None:
         logger.info(f"competition_season_teams relations inserted: count={len(team_ids_to_add)}")
     else:
         logger.info("No new competition_season_teams relations to insert")
-
+"""
 
