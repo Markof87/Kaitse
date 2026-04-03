@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, logger, status
-from openai import NotFoundError
+from app.domain.exceptions import NotFoundError
 
 from app.api.deps import get_player_service
 from app.application.dto.player import PlayerCreateDTO, PlayerFiltersDTO, PlayerNationalityAddDTO, PlayerPositionAddDTO, PlayerResponseDTO, PlayerUpdateDTO
