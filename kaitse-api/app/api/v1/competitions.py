@@ -35,13 +35,13 @@ async def create_competition(dto: CompetitionCreateDTO, service: CompetitionServ
     if existing:
         #Check if I need to update the existing competition with the new data, otherwise return the existing one.
         if existing.name != dto.name or existing.country_code != dto.country_code or existing.level != dto.level or existing.organizer != dto.organizer:
-            logger.info(f"Updating existing competition: code={dto.code}")
+            #logger.info(f"Updating existing competition: code={dto.code}")
             return await service.update(existing.id, dto)
         
-        logger.info(f"Competition already exists with the same data: code={dto.code}")
+        #logger.info(f"Competition already exists with the same data: code={dto.code}")
         return existing
     
-    logger.info(f"Creating new competition: code={dto.code}")
+    #logger.info(f"Creating new competition: code={dto.code}")
     return await service.create(dto)
 
 @router.patch("/{competition_id}", response_model=CompetitionResponseDTO)

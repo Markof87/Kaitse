@@ -33,9 +33,9 @@ async def create_player(dto: PlayerCreateDTO, service: PlayerService = Depends(g
     if existing:
         #Check if I need to update the existing player with the new data, otherwise return the existing one.
         if existing.full_name != dto.full_name or existing.short_name != dto.short_name or existing.image_path != dto.image_path or existing.birth_date != dto.birth_date or existing.height != dto.height or existing.weight != dto.weight or existing.preferred_foot != dto.preferred_foot:
-            logger.info(f"Updating existing player: transfermarkt_id={dto.transfermarkt_id}")
+            #logger.info(f"Updating existing player: transfermarkt_id={dto.transfermarkt_id}")
             return await service.update(existing.id, dto)
-        logger.info(f"Player already exists with the same data: transfermarkt_id={dto.transfermarkt_id}")
+        #logger.info(f"Player already exists with the same data: transfermarkt_id={dto.transfermarkt_id}")
         return existing
     return await service.create(dto)
 
