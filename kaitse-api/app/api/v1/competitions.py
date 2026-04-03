@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Query, logger, status
 from app.api.deps import get_competition_service
 from app.application.dto.competition import CompetitionCreateDTO, CompetitionResponseDTO, CompetitionUpdateDTO
 from app.application.services.competition_service import CompetitionService
+from app.domain.exceptions import NotFoundError
 
 router = APIRouter(prefix="/competitions", tags=["competitions"])
 
@@ -26,7 +27,11 @@ async def get_competition_by_code(code: str, service: CompetitionService = Depen
 @router.post("/", response_model=CompetitionResponseDTO, status_code=status.HTTP_201_CREATED)
 async def create_competition(dto: CompetitionCreateDTO, service: CompetitionService = Depends(get_competition_service)) -> CompetitionResponseDTO:
     #If exists, update the existing competition with the same code, otherwise create a new one.
-    existing = await service.get_by_code(dto.code)
+    try:
+        existing = await service.get_by_code(dto.code)
+    except NotFoundError:
+        existing = None
+
     if existing:
         #Check if I need to update the existing competition with the new data, otherwise return the existing one.
         if existing.name != dto.name or existing.country_code != dto.country_code or existing.level != dto.level or existing.organizer != dto.organizer:

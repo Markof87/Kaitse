@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, logger, status
+from openai import NotFoundError
 
 from app.api.deps import get_team_service
 from app.application.dto.team import TeamCreateDTO, TeamResponseDTO, TeamUpdateDTO
@@ -28,7 +29,11 @@ async def get_team(team_id: UUID, service: TeamService = Depends(get_team_servic
 @router.post("/", response_model=TeamResponseDTO, status_code=status.HTTP_201_CREATED)
 async def create_team(dto: TeamCreateDTO, service: TeamService = Depends(get_team_service)) -> TeamResponseDTO:
     #If exists, update the existing team with the same tm_team_id, otherwise create a new one.
-    existing = await service.get_by_tm_team_id(dto.tm_team_id)
+    try:
+        existing = await service.get_by_tm_team_id(dto.tm_team_id)
+    except NotFoundError:
+        existing = None
+
     if existing:
         #Check if I need to update the existing team with the new data, otherwise return the existing one.
         if existing.name != dto.name or existing.city != dto.city or existing.image_path != dto.image_path:
