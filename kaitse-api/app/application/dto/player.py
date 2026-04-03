@@ -12,7 +12,7 @@ class PlayerCreateDTO(BaseModel):
     preferred_foot: str | None = Field(None, pattern="^(left|right|both)$")
     slug: str
     image_path: str | None = None
-    fbref_id: str | None = None
+    fbref_id: int | None = None
     sofascore_id: int | None = None
     fotmob_id: int | None = None
     transfermarkt_id: int | None = None
@@ -32,7 +32,7 @@ class PlayerUpdateDTO(BaseModel):
     weight: int | None = Field(None, ge=40, le=150)
     preferred_foot: str | None = Field(None, pattern="^(left|right|both)$")
     image_path: str | None = None
-    fbref_id: str | None = None
+    fbref_id: int | None = None
     sofascore_id: int | None = None
     fotmob_id: int | None = None
     transfermarkt_id: int | None = None
@@ -47,7 +47,7 @@ class PlayerResponseDTO(BaseModel):
     preferred_foot: str | None
     slug: str
     image_path: str | None
-    fbref_id: str | None
+    fbref_id: int | None
     sofascore_id: int | None
     fotmob_id: int | None
     transfermarkt_id: int | None
