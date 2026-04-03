@@ -15,6 +15,13 @@ class TeamService:
             if not team:
                 raise NotFoundError(f"Team with id '{team_id}' not found", team_id)
             return TeamResponseDTO.model_validate(team)
+
+    async def get_by_tm_id(self, tm_team_id: int) -> TeamResponseDTO:
+        async with self.uow:
+            team = await self.uow.teams.get_by_tm_id(tm_team_id)
+            if not team:
+                raise NotFoundError(f"Team with tm_team_id '{tm_team_id}' not found", tm_team_id)
+            return TeamResponseDTO.model_validate(team)
         
     async def list(self, filters: dict) -> list[TeamResponseDTO]:
         async with self.uow:

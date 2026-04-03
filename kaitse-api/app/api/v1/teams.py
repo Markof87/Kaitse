@@ -30,7 +30,10 @@ async def get_team(team_id: UUID, service: TeamService = Depends(get_team_servic
 async def create_team(dto: TeamCreateDTO, service: TeamService = Depends(get_team_service)) -> TeamResponseDTO:
     #If exists, update the existing team with the same tm_team_id, otherwise create a new one.
     try:
-        existing = await service.get_by_id(dto.tm_team_id)
+        if dto.tm_team_id is None:
+            existing = None
+        else:
+            existing = await service.get_by_tm_id(dto.tm_team_id)
     except NotFoundError:
         existing = None
 
