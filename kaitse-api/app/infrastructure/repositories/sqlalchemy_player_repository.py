@@ -19,6 +19,10 @@ class SQLAlchemyPlayerRepository:
         result = await self.session.execute(select(Player).where(Player.slug == slug))
         return result.scalar_one_or_none()
     
+    async def get_by_transfermarkt_id(self, transfermarkt_id: int) -> Player | None:
+        result = await self.session.execute(select(Player).where(Player.transfermarkt_id == transfermarkt_id))
+        return result.scalar_one_or_none()
+    
     async def list(self, filters: dict) -> list[Player]:
         stmt = select(Player)
         if name:= filters.get("name"):

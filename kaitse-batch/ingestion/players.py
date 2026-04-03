@@ -1,4 +1,7 @@
+import os
+
 from dotenv import load_dotenv
+import requests
 load_dotenv()
 
 import re
@@ -101,10 +104,11 @@ def get_player_transfermarkt_info(url: str) -> dict:
     return player_info
 
 def upsert_players(players: list[dict], tm_team_id: int, season_code: str) -> None:
-    sb = supabase_client()
 
-    sb.table("players").upsert(
-        [{
+    api_base_url = os.getenv("KAITSE_API_BASE_URL", "http://localhost:8000").rstrip("/")
+
+    for p in players:
+        player_payload = {
             "full_name": p["full_name"],
             "short_name": p["short_name"],
             "slug": p["slug"],
@@ -114,8 +118,18 @@ def upsert_players(players: list[dict], tm_team_id: int, season_code: str) -> No
             "height": p.get("height"),
             "weight": p.get("weight"),
             "preferred_foot": p.get("preferred_foot"),
-        } for p in players], on_conflict="transfermarkt_id"
-    ).execute()
+        }
+
+    resp = requests.post(
+        f"{api_base_url}/api/v1/players/",
+        json=player_payload,
+        timeout=30,
+    )
+    resp.raise_for_status()
+
+    logger.info(f"player synced via API: transfermarkt_id={p['transfermarkt_id']} full_name={p['full_name']} short_name={p['short_name']} slug={p['slug']} image_path={p['image_path']} birth_date={p.get('birth_date')} height={p.get('height')} weight={p.get('weight')} preferred_foot={p.get('preferred_foot')}")
+
+    """
 
     tm_ids = [p["transfermarkt_id"] for p in players]
     rows = sb.table("players").select("id, transfermarkt_id").in_("transfermarkt_id", tm_ids).execute().data
@@ -137,7 +151,6 @@ def upsert_players(players: list[dict], tm_team_id: int, season_code: str) -> No
         if p["transfermarkt_id"] in player_id_by_tm
     ]
 
-    print("aaaaaaa", links)
 
     sb.table("player_stats").upsert(
         links,
@@ -147,5 +160,5 @@ def upsert_players(players: list[dict], tm_team_id: int, season_code: str) -> No
     logger.info(f"players upserted: count={len(players)}")
 
 
-
+    """
 

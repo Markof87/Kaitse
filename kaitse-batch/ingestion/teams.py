@@ -37,7 +37,6 @@ def parse_teams(html: str):
     return [{"tm_team_id": k,  "id": v["id"], "name": v["name"], "url": v["url"]} for k, v in teams.items()]
 
 def upsert_teams(teams: list[dict]) -> None:
-    #sb = supabase_client()
 
     # TODO: valori cablati per la sola Serie A, in futuro va generalizzato
     payload = {"code": "IT1", "name": "Serie A Enilive", "country_code": "ITA", "level": 1, "organizer": "Italy"}

@@ -24,6 +24,13 @@ class PlayerService:
                 raise NotFoundError(f"Player with slug '{slug}' not found", slug)
             return PlayerResponseDTO.model_validate(player)
         
+    async def get_by_transfermarkt_id(self, transfermarkt_id: int) -> PlayerResponseDTO:
+        async with self.uow:
+            player = await self.uow.players.get_by_transfermarkt_id(transfermarkt_id)
+            if not player:
+                raise NotFoundError(f"Player with transfermarkt_id '{transfermarkt_id}' not found", transfermarkt_id)
+            return PlayerResponseDTO.model_validate(player)
+        
     async def list(self, filters: PlayerFiltersDTO) -> list[PlayerResponseDTO]:
         async with self.uow:
             players = await self.uow.players.list(filters.model_dump(exclude_none=True))
