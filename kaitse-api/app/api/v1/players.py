@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, logger, status
 
 from app.api.deps import get_player_service
 from app.application.dto.player import PlayerCreateDTO, PlayerFiltersDTO, PlayerNationalityAddDTO, PlayerPositionAddDTO, PlayerResponseDTO, PlayerUpdateDTO
@@ -23,6 +23,15 @@ async def get_player_by_slug(slug: str, service: PlayerService = Depends(get_pla
 
 @router.post("/", response_model=PlayerResponseDTO, status_code=status.HTTP_201_CREATED)
 async def create_player(dto: PlayerCreateDTO, service: PlayerService = Depends(get_player_service)) -> PlayerResponseDTO:
+    #If exists, update the existing player with the same transfermarkt_id, otherwise create a new one.
+    existing = await service.get_by_transfermarkt_id(dto.transfermarkt_id)
+    if existing:
+        #Check if I need to update the existing player with the new data, otherwise return the existing one.
+        if existing.full_name != dto.full_name or existing.short_name != dto.short_name or existing.image_path != dto.image_path or existing.birth_date != dto.birth_date or existing.height != dto.height or existing.weight != dto.weight or existing.preferred_foot != dto.preferred_foot:
+            logger.info(f"Updating existing player: transfermarkt_id={dto.transfermarkt_id}")
+            return await service.update(existing.id, dto)
+        logger.info(f"Player already exists with the same data: transfermarkt_id={dto.transfermarkt_id}")
+        return existing
     return await service.create(dto)
 
 @router.patch("/{player_id}", response_model=PlayerResponseDTO)

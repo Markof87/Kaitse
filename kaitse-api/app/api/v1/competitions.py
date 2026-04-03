@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, logger, status
 
 from app.api.deps import get_competition_service
 from app.application.dto.competition import CompetitionCreateDTO, CompetitionResponseDTO, CompetitionUpdateDTO
@@ -25,6 +25,18 @@ async def get_competition_by_code(code: str, service: CompetitionService = Depen
 
 @router.post("/", response_model=CompetitionResponseDTO, status_code=status.HTTP_201_CREATED)
 async def create_competition(dto: CompetitionCreateDTO, service: CompetitionService = Depends(get_competition_service)) -> CompetitionResponseDTO:
+    #If exists, update the existing competition with the same code, otherwise create a new one.
+    existing = await service.get_by_code(dto.code)
+    if existing:
+        #Check if I need to update the existing competition with the new data, otherwise return the existing one.
+        if existing.name != dto.name or existing.country_code != dto.country_code or existing.level != dto.level or existing.organizer != dto.organizer:
+            logger.info(f"Updating existing competition: code={dto.code}")
+            return await service.update(existing.id, dto)
+        
+        logger.info(f"Competition already exists with the same data: code={dto.code}")
+        return existing
+    
+    logger.info(f"Creating new competition: code={dto.code}")
     return await service.create(dto)
 
 @router.patch("/{competition_id}", response_model=CompetitionResponseDTO)

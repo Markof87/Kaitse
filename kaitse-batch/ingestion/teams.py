@@ -54,8 +54,9 @@ def upsert_teams(teams: list[dict]) -> None:
     comp = body.get("data", body) if isinstance(body, dict) else {}
     competition_code = comp.get("code", payload["code"])
 
-    logger.info(f"competition synced via API: code={competition_code}")
+    logger.info(f"competition synced via API: code={competition_code}" f"name={payload['name']} country_code={payload['country_code']} level={payload['level']} organizer={payload['organizer']}")
 
+    #TODO: I have to check if the team already exists
     for t in teams:
         team_payload = {
             "tm_team_id": t["tm_team_id"],
@@ -70,6 +71,8 @@ def upsert_teams(teams: list[dict]) -> None:
             timeout=30,
         )
         resp.raise_for_status()
+
+        logger.info(f"team synced via API: tm_team_id={t['tm_team_id']} name={t['name']}")
 
     logger.info(f"teams synced via API: count={len(teams)}")
 

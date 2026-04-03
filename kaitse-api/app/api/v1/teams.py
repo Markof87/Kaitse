@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, logger, status
 
 from app.api.deps import get_team_service
 from app.application.dto.team import TeamCreateDTO, TeamResponseDTO, TeamUpdateDTO
@@ -27,6 +27,17 @@ async def get_team(team_id: UUID, service: TeamService = Depends(get_team_servic
 
 @router.post("/", response_model=TeamResponseDTO, status_code=status.HTTP_201_CREATED)
 async def create_team(dto: TeamCreateDTO, service: TeamService = Depends(get_team_service)) -> TeamResponseDTO:
+    #If exists, update the existing team with the same tm_team_id, otherwise create a new one.
+    existing = await service.get_by_tm_team_id(dto.tm_team_id)
+    if existing:
+        #Check if I need to update the existing team with the new data, otherwise return the existing one.
+        if existing.name != dto.name or existing.city != dto.city or existing.image_path != dto.image_path:
+            logger.info(f"Updating existing team: tm_team_id={dto.tm_team_id}")
+            return await service.update(existing.id, dto)
+        logger.info(f"Team already exists with the same data: tm_team_id={dto.tm_team_id}")
+        return existing
+    
+    logger.info(f"Creating new team: tm_team_id={dto.tm_team_id}")
     return await service.create(dto)
 
 @router.patch("/{team_id}", response_model=TeamResponseDTO)

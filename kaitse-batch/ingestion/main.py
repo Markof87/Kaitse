@@ -43,5 +43,4 @@ if __name__ == "__main__":
         logger.exception("Fatal error during ingestion")
         raise
 
-
     logger.info("Batch completed successfully")
