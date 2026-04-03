@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, logger, status
+from fastapi import APIRouter, Depends, Query, status
 from app.domain.exceptions import NotFoundError
 
 from app.api.deps import get_player_service

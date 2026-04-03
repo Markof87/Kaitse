@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, logger, status
+from fastapi import APIRouter, Depends, Query, status
 
 from app.api.deps import get_competition_service
 from app.application.dto.competition import CompetitionCreateDTO, CompetitionResponseDTO, CompetitionUpdateDTO
