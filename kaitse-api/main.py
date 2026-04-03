@@ -25,20 +25,23 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Perform any cleanup tasks here (e.g., close database connections, release resources)
 
 def create_app() -> FastAPI:
+    docs_enabled = settings.enable_docs
+
     app = FastAPI(
         title=settings.app_name,
         debug=settings.debug,
         description="API for football data management",
         version="1.0.0",
         lifespan=lifespan,
-        docs_url="/docs" if settings.app_env=="development" else None,
-        redoc_url="/redoc" if settings.app_env=="development" else None,
+        docs_url="/docs" if docs_enabled else None,
+        redoc_url="/redoc" if docs_enabled else None,
     )
 
     # Configure CORS
+    allow_origins = settings.cors_allow_origins
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"] if settings.app_env=="development" else [],  # Adjust this in production to restrict origins
+        allow_origins=allow_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
