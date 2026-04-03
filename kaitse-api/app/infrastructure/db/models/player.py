@@ -20,7 +20,7 @@ class Player(Base):
     image_path: Mapped[str|None] = mapped_column(Text, nullable=True)
 
     #External identifiers
-    fbref_id: Mapped[int|None] = mapped_column(Text, unique=True, nullable=True)
+    fbref_id: Mapped[int|None] = mapped_column(Integer, unique=True, nullable=True)
     sofascore_id: Mapped[int|None] = mapped_column(Integer, unique=True, nullable=True)
     fotmob_id: Mapped[int|None] = mapped_column(Integer, unique=True, nullable=True)
     transfermarkt_id: Mapped[int|None] = mapped_column(Integer, unique=True, nullable=True)
