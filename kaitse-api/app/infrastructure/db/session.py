@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.core.config import settings
 
-CA_PATH = Path(__file__).with_name("certs") / "do-postgres-ca.crt"
+CA_PATH = Path(__file__).with_name("certs") / "ca-certificate.crt"
 
 ssl_context = ssl.create_default_context(cafile=str(CA_PATH))
 
