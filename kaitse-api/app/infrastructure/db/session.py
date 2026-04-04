@@ -1,13 +1,19 @@
 from collections.abc import AsyncGenerator
+import ssl
+from pathlib import Path
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.config import settings
 
+CA_PATH = Path(__file__).with_name("certs") / "do-postgres-ca.crt"
+
+ssl_context = ssl.create_default_context(cafile=str(CA_PATH))
+
 # Database session management
 # echo=True enables SQL query logging, 
 # pool_pre_ping=True ensures connections are alive before using them
-engine = create_async_engine(settings.database_url, echo=settings.debug, pool_pre_ping=True, connect_args={"ssl": True})
+engine = create_async_engine(settings.database_url, echo=settings.debug, pool_pre_ping=True, connect_args={"ssl": ssl_context})
 
 # sessionmaker factory for creating new database sessions, configured to not autocommit or autoflush, 
 # and to not expire objects on commit
