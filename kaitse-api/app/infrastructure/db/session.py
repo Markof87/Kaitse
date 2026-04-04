@@ -7,7 +7,7 @@ from app.core.config import settings
 # Database session management
 # echo=True enables SQL query logging, 
 # pool_pre_ping=True ensures connections are alive before using them
-engine = create_async_engine(settings.database_url, echo=settings.debug, pool_pre_ping=True)
+engine = create_async_engine(settings.database_url, echo=settings.debug, pool_pre_ping=True, connect_args={"ssl": True})
 
 # sessionmaker factory for creating new database sessions, configured to not autocommit or autoflush, 
 # and to not expire objects on commit
