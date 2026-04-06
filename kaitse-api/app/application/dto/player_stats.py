@@ -31,11 +31,11 @@ class PlayerStatsResponseDTO(BaseModel):
     team_id: UUID
     season_code: str
     source: str
-    minutes: int | None
-    matches: int | None
-    goals: int | None
-    assists: int | None
-    metrics: dict | None
+    minutes: int | None = None
+    matches: int | None = None
+    goals: int | None = None
+    assists: int | None = None
+    metrics: dict | None = None
     created_at: datetime
     updated_at: datetime
 

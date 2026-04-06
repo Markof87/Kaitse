@@ -117,21 +117,34 @@ def upsert_players(players: list[dict], tm_team_id: int, season_code: str) -> No
             "birth_date": p.get("birth_date"),
             "height": p.get("height"),
             "weight": p.get("weight"),
-            "preferred_foot": p.get("preferred_foot"),
+            "preferred_foot": p.get("preferred_foot").lower() if p.get("preferred_foot") else None,
         }
 
-    resp = requests.post(
-        f"{api_base_url}/api/v1/players/",
-        json=player_payload,
-        timeout=30,
-    )
-    resp.raise_for_status()
+        print(player_payload)
 
-    logger.info(f"player synced via API: transfermarkt_id={p['transfermarkt_id']} full_name={p['full_name']} short_name={p['short_name']} slug={p['slug']} image_path={p['image_path']} birth_date={p.get('birth_date')} height={p.get('height')} weight={p.get('weight')} preferred_foot={p.get('preferred_foot')}")
+        resp = requests.post(
+            f"{api_base_url}/api/v1/players/",
+            json=player_payload,
+            timeout=30,
+        )
+        resp.raise_for_status()
+
+        logger.info(f"player synced via API: transfermarkt_id={p['transfermarkt_id']} full_name={p['full_name']} short_name={p['short_name']} slug={p['slug']} image_path={p['image_path']} birth_date={p.get('birth_date')} height={p.get('height')} weight={p.get('weight')} preferred_foot={p.get('preferred_foot')}")
+
+    
+    links = [
+        {
+            "team_id": tm_team_id,
+            "season_code": season_code,
+            "player_id": p["id"],
+        }
+        for p in players
+    ]
+
+    print(links)
 
     """
 
-    tm_ids = [p["transfermarkt_id"] for p in players]
     rows = sb.table("players").select("id, transfermarkt_id").in_("transfermarkt_id", tm_ids).execute().data
     player_id_by_tm = {int(r["transfermarkt_id"]): r["id"] for r in rows}
     print(player_id_by_tm)

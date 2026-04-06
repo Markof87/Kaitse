@@ -1,15 +1,17 @@
 import pytest
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
-from main import app
-from app.infrastructure.db.session import get_async_session
+@pytest.fixture
+def app():
+    from main import app as fastapi_app
+    return fastapi_app
 
 #Fixture that returns asyncrone client HTTP for testing the API
 @pytest.fixture
-async def client():
-    #Test client for making request to the API
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+async def client(app):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
 
 #Fixture for testing database

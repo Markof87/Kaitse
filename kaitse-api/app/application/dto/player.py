@@ -40,17 +40,17 @@ class PlayerUpdateDTO(BaseModel):
 class PlayerResponseDTO(BaseModel):
     id: UUID
     full_name: str
-    short_name: str | None
-    birth_date: date | None
-    height: int | None
-    weight: int | None
-    preferred_foot: str | None
+    short_name: str | None = None
+    birth_date: date | None = None
+    height: int | None = None
+    weight: int | None = None
+    preferred_foot: str | None = None
     slug: str
-    image_path: str | None
-    fbref_id: int | None
-    sofascore_id: int | None
-    fotmob_id: int | None
-    transfermarkt_id: int | None
+    image_path: str | None = None
+    fbref_id: int | None = None
+    sofascore_id: int | None = None
+    fotmob_id: int | None = None
+    transfermarkt_id: int | None = None   
     created_at: datetime
     updated_at: datetime
 
