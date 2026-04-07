@@ -1,3 +1,6 @@
+from app.infrastructure.db.base import Base
+from app.infrastructure.db.models import player_stats
+
 import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
@@ -17,13 +20,20 @@ async def client(app):
 #Fixture for testing database
 @pytest.fixture
 async def test_db_session():
-    #Create a test database session
     test_engine = create_async_engine("sqlite+aiosqlite:///:memory:")
-    async_session = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_delete=False)
-
+    
+    # Remove PlayerStats from metadata
+    tables_to_drop = [t for t in Base.metadata.tables.values() if t.name == 'player_stats']
+    for table in tables_to_drop:
+        Base.metadata.remove(table)
+    
+    # Create all tables except player_stats
     async with test_engine.begin() as conn:
-        #Create tables (skip this if you use Alembic for migrations)
-        pass
+        await conn.run_sync(Base.metadata.create_all)
 
+    async_session = async_sessionmaker(test_engine, class_=AsyncSession)
+    
     async with async_session() as session:
         yield session
+        
+    await test_engine.dispose()
