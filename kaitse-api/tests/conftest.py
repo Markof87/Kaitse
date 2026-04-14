@@ -5,6 +5,13 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.dialects.postgresql import JSONB
+
+@compiles(JSONB, "sqlite")
+def compile_jsonb_sqlite(type_, compiler, **kw):
+    return "JSON"
+
 @pytest.fixture
 def app():
     from main import app as fastapi_app
@@ -21,11 +28,6 @@ async def client(app):
 @pytest.fixture
 async def test_db_session():
     test_engine = create_async_engine("sqlite+aiosqlite:///:memory:")
-    
-    # Remove PlayerStats from metadata
-    tables_to_drop = [t for t in Base.metadata.tables.values() if t.name == 'player_stats']
-    for table in tables_to_drop:
-        Base.metadata.remove(table)
     
     # Create all tables except player_stats
     async with test_engine.begin() as conn:

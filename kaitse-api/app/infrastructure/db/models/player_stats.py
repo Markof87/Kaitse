@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import Integer, DateTime, Text, UniqueConstraint, func
+from sqlalchemy import Integer, DateTime, Text, UniqueConstraint, Uuid, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -10,7 +10,7 @@ from app.infrastructure.db.base import Base
 class PlayerStats(Base):
     __tablename__ = "player_stats"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
     player_id: Mapped[UUID] = mapped_column(nullable=False, index=True)
     team_id: Mapped[UUID] = mapped_column(nullable=False, index=True)
     season_code: Mapped[str] = mapped_column(Text, nullable=False)

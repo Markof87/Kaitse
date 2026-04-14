@@ -1,6 +1,6 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from sqlalchemy import select
+from sqlalchemy import select, values
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,24 +28,55 @@ class SqlAlchemyPlayerStatsRepository:
         return list(result.scalars().all())
     
     async def upsert(self, stats: PlayerStats) -> PlayerStats:
+        if stats.id is None:
+            stats.id = uuid4()
+
         """
         Insert or update based on the unique constraint (player_id, team_id, season_code, source)
         If the record already exists, update the values, otherwise insert
         """
+        value = dict(
+            id = stats.id,
+            player_id = stats.player_id,
+            team_id = stats.team_id,
+            season_code = stats.season_code,
+            source = stats.source,
+            minutes = stats.minutes,
+            matches = stats.matches,
+            goals = stats.goals,
+            assists = stats.assists,
+            metrics = stats.metrics,
+        )
 
-        stmt = (insert(PlayerStats).values(id = stats.id,
-                                           player_id = stats.player_id,
-                                           team_id = stats.team_id,
-                                           season_code = stats.season_code,
-                                           source = stats.source,
-                                           minutes = stats.minutes,
-                                           matches = stats.matches,
-                                           goals = stats.goals,
-                                           assists = stats.assists,
-                                           metrics = stats.metrics,
-                                           )
-                                            .returning(PlayerStats)
+        dialect = self.session.bind.dialect.name
+        index_elems = ["player_id", "team_id", "season_code", "source"]
+        
+        if dialect == "sqlite":
+
+            stmt = (
+                sqlite_insert(PlayerStats)
+                .values(**values)
+                .on_conflict_do_update(
+                    index_elements=index_elems,
+                    set_=dict(
+                        minutes=values["minutes"],
+                        matches=values["matches"],
+                        goals=values["goals"],
+                        assists=values["assists"],
+                        metrics=values["metrics"],
+                    ),
                 )
+                .returning(PlayerStats)
+            )
+            
+        else:
+            #For other databases, we can try a simple upsert using merge, but it may not work correctly with the unique constraint
+            stmt = (
+                insert(PlayerStats)
+                .values(value)
+                .returning(PlayerStats)
+            )
+
         result = await self.session.execute(stmt)
         await self.session.flush()
         return result.scalar_one()

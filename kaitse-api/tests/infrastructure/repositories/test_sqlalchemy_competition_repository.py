@@ -7,7 +7,6 @@ from app.infrastructure.repositories.sqlalchemy_competition_repository import Sq
 
 @pytest.mark.asyncio
 async def test_get_by_id_returns_competition(test_db_session: AsyncSession):
-
     #Setup
     competition = Competition(name="Test Competition", code="TEST123", country_code="US", level=1)
     test_db_session.add(competition)
